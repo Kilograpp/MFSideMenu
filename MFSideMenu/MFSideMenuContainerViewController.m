@@ -510,6 +510,43 @@ typedef enum {
     [self setCenterViewControllerOffset:offset additionalAnimations:effects animated:animated completion:nil];
 }
 
+- (void)setMenuWidth:(CGFloat)menuWidth withAnimationDuration:(CGFloat)duration {
+    [self setLeftMenuWidth:menuWidth withAnimationDuration:duration];
+    [self setRightMenuWidth:menuWidth withAnimationDuration:duration];
+}
+
+- (void)setLeftMenuWidth:(CGFloat)leftMenuWidth withAnimationDuration:(CGFloat)duration {
+    _leftMenuWidth = leftMenuWidth;
+
+    if(self.menuState != MFSideMenuStateLeftMenuOpen) {
+        [self setLeftSideMenuFrameToClosedPosition];
+        return;
+    }
+
+    CGFloat offset = _leftMenuWidth;
+    void (^effects)() = ^ {
+        [self alignLeftMenuControllerWithCenterViewController];
+    };
+
+    [self setCenterViewControllerOffset:offset additionalAnimations:effects animationDuration:duration completion:nil];
+}
+
+- (void)setRightMenuWidth:(CGFloat)rightMenuWidth withAnimationDuration:(CGFloat)duration {
+    _rightMenuWidth = rightMenuWidth;
+
+    if(self.menuState != MFSideMenuStateRightMenuOpen) {
+        [self setRightSideMenuFrameToClosedPosition];
+        return;
+    }
+
+    CGFloat offset = -1*rightMenuWidth;
+    void (^effects)() = ^ {
+        [self alignRightMenuControllerWithCenterViewController];
+    };
+
+    [self setCenterViewControllerOffset:offset additionalAnimations:effects animationDuration:duration completion:nil];
+}
+
 
 #pragma mark -
 #pragma mark - MFSideMenuPanMode
@@ -753,6 +790,24 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         if(additionalAnimations) additionalAnimations();
         innerCompletion();
     }
+}
+
+- (void)setCenterViewControllerOffset:(CGFloat)offset
+                 additionalAnimations:(void (^)(void))additionalAnimations
+                    animationDuration:(CGFloat)duration
+                           completion:(void (^)(void))completion {
+    void (^innerCompletion)() = ^ {
+        self.panGestureVelocity = 0.0;
+        if(completion) completion();
+    };
+
+    [UIView animateWithDuration:duration animations:^{
+        [self setCenterViewControllerOffset:offset];
+        if(additionalAnimations) additionalAnimations();
+        [self.view layoutIfNeeded];
+    } completion:^(BOOL finished) {
+        innerCompletion();
+    }];
 }
 
 - (void) setCenterViewControllerOffset:(CGFloat)xOffset {

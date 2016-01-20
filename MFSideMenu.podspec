@@ -5,7 +5,7 @@ Pod::Spec.new do |s|
   s.summary  = 'Facebook-like side menu for iOS.'
   s.homepage = 'https://github.com/mikefrederick/MFSideMenu'
   s.author   = { 'Michael Frederick' => 'mike@viamike.com' }
-  s.source   = { :git => 'https://github.com/mikefrederick/MFSideMenu.git', :tag => s.version.to_s }
+  s.source   = { :git => 'git@git.kilograpp.com:iOS/MFSideMenu.git', :tag => s.version.to_s }
   s.platform = :ios
   s.requires_arc = true
   s.source_files = 'MFSideMenu/*'

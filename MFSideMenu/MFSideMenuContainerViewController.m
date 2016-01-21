@@ -781,7 +781,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         [UIView animateWithDuration:duration animations:^{
             [self setCenterViewControllerOffset:offset];
             if(additionalAnimations) additionalAnimations();
-            [self.view layoutIfNeeded];
         } completion:^(BOOL finished) {
             innerCompletion();
         }];

@@ -10,7 +10,7 @@
 		D81DC2951D393D8B00D48FCD /* MFSideMenu.h in Headers */ = {isa = PBXBuildFile; fileRef = D81DC2941D393D8B00D48FCD /* MFSideMenu.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D81DC2A41D393DD800D48FCD /* MFSideMenuContainerViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = D81DC29D1D393DD800D48FCD /* MFSideMenuContainerViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D81DC2A51D393DD800D48FCD /* MFSideMenuContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D81DC29E1D393DD800D48FCD /* MFSideMenuContainerViewController.m */; };
-		D81DC2A61D393DD800D48FCD /* MFSideMenuShadow.h in Headers */ = {isa = PBXBuildFile; fileRef = D81DC29F1D393DD800D48FCD /* MFSideMenuShadow.h */; };
+		D81DC2A61D393DD800D48FCD /* MFSideMenuShadow.h in Headers */ = {isa = PBXBuildFile; fileRef = D81DC29F1D393DD800D48FCD /* MFSideMenuShadow.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D81DC2A71D393DD800D48FCD /* MFSideMenuShadow.m in Sources */ = {isa = PBXBuildFile; fileRef = D81DC2A01D393DD800D48FCD /* MFSideMenuShadow.m */; };
 		D81DC2A81D393DD800D48FCD /* UIViewController+MFSideMenuAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = D81DC2A11D393DD800D48FCD /* UIViewController+MFSideMenuAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D81DC2A91D393DD800D48FCD /* UIViewController+MFSideMenuAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = D81DC2A21D393DD800D48FCD /* UIViewController+MFSideMenuAdditions.m */; };

@@ -68,9 +68,6 @@ typedef enum {
 - (void)setMenuWidth:(CGFloat)menuWidth animated:(BOOL)animated;
 - (void)setLeftMenuWidth:(CGFloat)leftMenuWidth animated:(BOOL)animated;
 - (void)setRightMenuWidth:(CGFloat)rightMenuWidth animated:(BOOL)animated;
-- (void)setMenuWidth:(CGFloat)menuWidth withAnimationDuration:(CGFloat)duration;
-- (void)setLeftMenuWidth:(CGFloat)leftMenuWidth withAnimationDuration:(CGFloat)duration;
-- (void)setRightMenuWidth:(CGFloat)rightMenuWidth withAnimationDuration:(CGFloat)duration;
 
 // can be used to attach a pan gesture recognizer to a custom view
 - (UIPanGestureRecognizer *)panGestureRecognizer;

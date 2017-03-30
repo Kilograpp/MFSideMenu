@@ -371,9 +371,9 @@ typedef enum {
     void (^innerCompletion)() = ^ {
         _menuState = menuState;
         
-        if (MFIsPhone()) {
+//        if (MFIsPhone()) {
             [self setUserInteractionStateForCenterViewController];
-        }
+//        }
 
         MFSideMenuStateEvent eventType = (_menuState == MFSideMenuStateClosed) ? MFSideMenuStateEventMenuDidClose : MFSideMenuStateEventMenuDidOpen;
         [self sendStateEventNotification:eventType];
@@ -605,10 +605,10 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             }
         }
         else if(translatedPoint.x < 0) {
-//            self.panDirection = MFSideMenuPanDirectionLeft;
-//            if(self.rightMenuViewController && self.menuState == MFSideMenuStateClosed) {
-//                [self rightMenuWillShow];
-//            }
+            self.panDirection = MFSideMenuPanDirectionLeft;
+            if(self.rightMenuViewController && self.menuState == MFSideMenuStateClosed) {
+                [self rightMenuWillShow];
+            }
         }
     }
     

@@ -144,13 +144,13 @@ typedef enum {
     if([self respondsToSelector:@selector(topLayoutGuide)]) {
         UIEdgeInsets insets = UIEdgeInsetsMake([self.topLayoutGuide length], 0, 0, 0);
         if(_leftSideMenuViewController &&
-            [_leftSideMenuViewController automaticallyAdjustsScrollViewInsets] &&
-            [_leftSideMenuViewController.view respondsToSelector:@selector(setContentInset:)]) {
+           [_leftSideMenuViewController automaticallyAdjustsScrollViewInsets] &&
+           [_leftSideMenuViewController.view respondsToSelector:@selector(setContentInset:)]) {
             [(UIScrollView *)_leftSideMenuViewController.view setContentInset:insets];
         }
         if(_rightSideMenuViewController &&
-            [_rightSideMenuViewController automaticallyAdjustsScrollViewInsets] &&
-            [_rightSideMenuViewController.view respondsToSelector:@selector(setContentInset:)]) {
+           [_rightSideMenuViewController automaticallyAdjustsScrollViewInsets] &&
+           [_rightSideMenuViewController.view respondsToSelector:@selector(setContentInset:)]) {
             [(UIScrollView *)_rightSideMenuViewController.view setContentInset:insets];
         }
     }
@@ -243,7 +243,15 @@ typedef enum {
     
     [self addChildViewController:_centerViewController];
     [self.view addSubview:[_centerViewController view]];
-    [((UIViewController *)_centerViewController) view].frame = (CGRect){.origin = origin, .size=centerViewController.view.frame.size};
+    if (MFIsLandscape()) {
+        CGPoint _origin = CGPointMake(300, 0);
+        CGSize _size = CGSizeMake(centerViewController.view.frame.size.width - 300, centerViewController.view.frame.size.height);
+        [((UIViewController *)_centerViewController) view].frame = (CGRect){.origin = _origin, .size=_size};
+    } else {
+        [((UIViewController *)_centerViewController) view].frame = (CGRect){.origin = origin, .size=centerViewController.view.frame.size};
+    }
+    
+    
     
     [_centerViewController didMoveToParentViewController:self];
     
@@ -285,7 +293,7 @@ typedef enum {
 - (UIPanGestureRecognizer *)panGestureRecognizer {
     UIPanGestureRecognizer *recognizer = [[UIPanGestureRecognizer alloc]
                                           initWithTarget:self action:@selector(handlePan:)];
-	[recognizer setMaximumNumberOfTouches:1];
+    [recognizer setMaximumNumberOfTouches:1];
     [recognizer setDelegate:self];
     return recognizer;
 }
@@ -299,10 +307,10 @@ typedef enum {
 {
     if (self.centerViewController)
     {
-        if (MFIsPhone()) {
-            [[self.centerViewController view] removeGestureRecognizer:[self centerTapGestureRecognizer]];
-        }
-
+        //        if (!MFIsLandscape()) {
+        [[self.centerViewController view] removeGestureRecognizer:[self centerTapGestureRecognizer]];
+        //        }
+        
         [[self.centerViewController view] removeGestureRecognizer:[self panGestureRecognizer]];
     }
 }
@@ -310,10 +318,10 @@ typedef enum {
 {
     if (self.centerViewController)
     {
-        if (MFIsPhone()) {
-            [[self.centerViewController view] addGestureRecognizer:[self centerTapGestureRecognizer]];
-        }
-
+        //        if (!MFIsLandscape()) {
+        [[self.centerViewController view] addGestureRecognizer:[self centerTapGestureRecognizer]];
+        //        }
+        
         [[self.centerViewController view] addGestureRecognizer:[self panGestureRecognizer]];
     }
 }
@@ -372,10 +380,10 @@ typedef enum {
     void (^innerCompletion)() = ^ {
         _menuState = menuState;
         
-//        if (MFIsPhone()) {
-            [self setUserInteractionStateForCenterViewController];
-//        }
-
+        //        if (MFIsPhone()) {
+        [self setUserInteractionStateForCenterViewController];
+        //        }
+        
         MFSideMenuStateEvent eventType = (_menuState == MFSideMenuStateClosed) ? MFSideMenuStateEventMenuDidClose : MFSideMenuStateEventMenuDidOpen;
         [self sendStateEventNotification:eventType];
         
@@ -475,8 +483,8 @@ typedef enum {
     CGFloat xOffset = [self.centerViewController view].frame.origin.x;
     CGFloat xPositionDivider = (self.menuSlideAnimationEnabled) ? self.menuSlideAnimationFactor : 1.0;
     rightMenuFrame.origin.x = self.menuContainerView.frame.size.width - _rightMenuWidth
-        + xOffset / xPositionDivider
-        + _rightMenuWidth / xPositionDivider;
+    + xOffset / xPositionDivider
+    + _rightMenuWidth / xPositionDivider;
     
     [self.rightMenuViewController view].frame = rightMenuFrame;
 }
@@ -552,14 +560,14 @@ typedef enum {
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
     if([gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]] &&
-       self.menuState != MFSideMenuStateClosed) return YES;
+       self.menuState != MFSideMenuStateClosed && !MFIsLandscape()) return YES;
     
     if([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
         if([gestureRecognizer.view isEqual:[self.centerViewController view]])
             return [self centerViewControllerPanEnabled];
         
         if([gestureRecognizer.view isEqual:self.menuContainerView])
-           return [self sideMenuPanEnabled];
+            return [self sideMenuPanEnabled];
         
         // pan gesture is attached to a custom view
         return YES;
@@ -579,7 +587,19 @@ typedef enum {
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
 shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-	return NO;
+    return YES;
+}
+
+#warning IF SCROLLING DOESNT WORK DELETE THIS METHOD!!!!!!!!!!!!!!!!!!!!
+//если что то не работает - удалить этот метод
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    NSString *className = NSStringFromClass([otherGestureRecognizer class]);
+    
+    if ([className rangeOfString:@"ViewPan"].location!=NSNotFound && ![otherGestureRecognizer.view isKindOfClass:[UITableView class]]) {
+        return NO;
+    }
+    
+    return YES;
 }
 
 
@@ -591,11 +611,11 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 - (void) handlePan:(UIPanGestureRecognizer *)recognizer {
     UIView *view = [self.centerViewController view];
     
-	if(recognizer.state == UIGestureRecognizerStateBegan) {
+    if(recognizer.state == UIGestureRecognizerStateBegan) {
         // remember where the pan started
         panGestureOrigin = view.frame.origin;
         self.panDirection = MFSideMenuPanDirectionNone;
-	}
+    }
     
     if(self.panDirection == MFSideMenuPanDirectionNone) {
         CGPoint translatedPoint = [recognizer translationInView:view];
@@ -672,7 +692,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         }
         
         self.panDirection = MFSideMenuPanDirectionNone;
-	} else {
+    } else {
         [self setCenterViewControllerOffset:translatedPoint.x];
     }
 }
@@ -699,7 +719,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     
     [self setCenterViewControllerOffset:translatedPoint.x];
     
-	if(recognizer.state == UIGestureRecognizerStateEnded) {
+    if(recognizer.state == UIGestureRecognizerStateEnded) {
         CGPoint velocity = [recognizer velocityInView:view];
         CGFloat finalX = translatedPoint.x + (.35*velocity.x);
         CGFloat viewWidth = view.frame.size.width;
@@ -723,7 +743,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                 [self setCenterViewControllerOffset:adjustedOrigin.x animated:YES completion:nil];
             }
         }
-	} else {
+    } else {
         [self setCenterViewControllerOffset:translatedPoint.x];
     }
 }
@@ -735,17 +755,11 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 }
 
 - (void)setUserInteractionStateForCenterViewController {
-    // disable user interaction on the current stack of view controllers if the menu is visible
-    if (MFIsPad() && MFIsLandscape) {
-        return;
-    }
-    
     if([self.centerViewController respondsToSelector:@selector(viewControllers)]) {
         NSArray *viewControllers = [self.centerViewController viewControllers];
         for(UIViewController* viewController in viewControllers) {
             
-//            bool padOrientationCondition = MFIsPad();
-            viewController.view.userInteractionEnabled = (self.menuState == MFSideMenuStateClosed || MFIsPad());
+            viewController.view.userInteractionEnabled = (self.menuState == MFSideMenuStateClosed) || MFIsLandscape();
         }
     }
 }

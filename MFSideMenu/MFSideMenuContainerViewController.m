@@ -743,8 +743,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         NSArray *viewControllers = [self.centerViewController viewControllers];
         for(UIViewController* viewController in viewControllers) {
             
-            bool padOrientationCondition = MFIsPad();
-            viewController.view.userInteractionEnabled = (self.menuState == MFSideMenuStateClosed && padOrientationCondition);
+//            bool padOrientationCondition = MFIsPad();
+            viewController.view.userInteractionEnabled = (self.menuState == MFSideMenuStateClosed || MFIsPad());
         }
     }
 }

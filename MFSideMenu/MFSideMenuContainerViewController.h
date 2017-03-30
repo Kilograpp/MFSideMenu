@@ -11,25 +11,25 @@
 
 extern NSString * const MFSideMenuStateNotificationEvent;
 
-typedef enum {
+typedef NS_ENUM(NSUInteger, MFSideMenuPanMode) {
     MFSideMenuPanModeNone = 0, // pan disabled
     MFSideMenuPanModeCenterViewController = 1 << 0, // enable panning on the centerViewController
     MFSideMenuPanModeSideMenu = 1 << 1, // enable panning on side menus
     MFSideMenuPanModeDefault = MFSideMenuPanModeCenterViewController | MFSideMenuPanModeSideMenu
-} MFSideMenuPanMode;
+};
 
-typedef enum {
+typedef NS_ENUM(NSUInteger, MFSideMenuState) {
     MFSideMenuStateClosed, // the menu is closed
     MFSideMenuStateLeftMenuOpen, // the left-hand menu is open
     MFSideMenuStateRightMenuOpen // the right-hand menu is open
-} MFSideMenuState;
+};
 
-typedef enum {
+typedef NS_ENUM(NSUInteger, MFSideMenuStateEvent) {
     MFSideMenuStateEventMenuWillOpen, // the menu is going to open
     MFSideMenuStateEventMenuDidOpen, // the menu finished opening
     MFSideMenuStateEventMenuWillClose, // the menu is going to close
     MFSideMenuStateEventMenuDidClose // the menu finished closing
-} MFSideMenuStateEvent;
+};
 
 
 @interface MFSideMenuContainerViewController : UIViewController<UIGestureRecognizerDelegate>

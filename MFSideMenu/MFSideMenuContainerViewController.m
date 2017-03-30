@@ -17,6 +17,11 @@ bool MFIsPhone() {
     return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone;
 }
 
+bool MFIsLandscape() {
+    UIDeviceOrientation deviceOrientation = [[UIDevice currentDevice] orientation];
+    return UIDeviceOrientationIsLandscape(deviceOrientation);
+}
+
 NSString * const MFSideMenuStateNotificationEvent = @"MFSideMenuStateNotificationEvent";
 
 typedef enum {
@@ -600,10 +605,10 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             }
         }
         else if(translatedPoint.x < 0) {
-            self.panDirection = MFSideMenuPanDirectionLeft;
-            if(self.rightMenuViewController && self.menuState == MFSideMenuStateClosed) {
-                [self rightMenuWillShow];
-            }
+//            self.panDirection = MFSideMenuPanDirectionLeft;
+//            if(self.rightMenuViewController && self.menuState == MFSideMenuStateClosed) {
+//                [self rightMenuWillShow];
+//            }
         }
     }
     
@@ -730,7 +735,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)setUserInteractionStateForCenterViewController {
     // disable user interaction on the current stack of view controllers if the menu is visible
-    if (MFIsPad()) {
+    if (MFIsPad() && MFIsLandscape) {
         return;
     }
     
@@ -738,8 +743,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         NSArray *viewControllers = [self.centerViewController viewControllers];
         for(UIViewController* viewController in viewControllers) {
             
-            UIDeviceOrientation deviceOrientation = [[UIDevice currentDevice] orientation];
-            bool padOrientationCondition = MFIsPad() && deviceOrientation == UIDeviceOrientationPortrait;
+            bool padOrientationCondition = MFIsPad();
             viewController.view.userInteractionEnabled = (self.menuState == MFSideMenuStateClosed && padOrientationCondition);
         }
     }

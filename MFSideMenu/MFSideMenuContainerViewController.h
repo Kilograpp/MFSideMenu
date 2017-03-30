@@ -69,6 +69,8 @@ typedef NS_ENUM(NSUInteger, MFSideMenuStateEvent) {
 - (void)setLeftMenuWidth:(CGFloat)leftMenuWidth animated:(BOOL)animated;
 - (void)setRightMenuWidth:(CGFloat)rightMenuWidth animated:(BOOL)animated;
 
+- (void)setUserInteractionStateForCenterViewController;
+
 // can be used to attach a pan gesture recognizer to a custom view
 - (UIPanGestureRecognizer *)panGestureRecognizer;
 

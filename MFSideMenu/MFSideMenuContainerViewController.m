@@ -60,6 +60,7 @@ typedef enum {
 @synthesize shadow;
 
 
+// TODO: IF SCROLLING DOESNT WORK DELETE gesture recognoizer delegate METHOD!!!!!!!!!!!!!!!!!!!
 #pragma mark -
 #pragma mark - Initialization
 
@@ -590,7 +591,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     return YES;
 }
 
-#warning IF SCROLLING DOESNT WORK DELETE THIS METHOD!!!!!!!!!!!!!!!!!!!!
+// TODO: IF SCROLLING DOESNT WORK DELETE THIS METHOD!!!!!!!!!!!!!!!!!!!!
 //если что то не работает - удалить этот метод
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     NSString *className = NSStringFromClass([otherGestureRecognizer class]);

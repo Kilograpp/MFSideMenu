@@ -211,6 +211,7 @@ typedef enum {
     [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
     
     [self.shadow shadowedViewDidRotate];
+    [self setUserInteractionStateForCenterViewController];
 }
 
 

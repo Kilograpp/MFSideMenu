@@ -591,17 +591,17 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     return YES;
 }
 
-// TODO: IF SCROLLING DOESNT WORK DELETE THIS METHOD!!!!!!!!!!!!!!!!!!!!
-//если что то не работает - удалить этот метод
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-    NSString *className = NSStringFromClass([otherGestureRecognizer class]);
-    
-    if ([className rangeOfString:@"ViewPan"].location!=NSNotFound && ![otherGestureRecognizer.view isKindOfClass:[UITableView class]]) {
-        return NO;
-    }
-    
-    return YES;
-}
+//// TODO: IF SCROLLING DOESNT WORK DELETE THIS METHOD!!!!!!!!!!!!!!!!!!!!
+////если что то не работает - удалить этот метод
+//- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+//    NSString *className = NSStringFromClass([otherGestureRecognizer class]);
+//    
+//    if ([className rangeOfString:@"ViewPan"].location!=NSNotFound && ![otherGestureRecognizer.view isKindOfClass:[UITableView class]]) {
+//        return NO;
+//    }
+//    
+//    return YES;
+//}
 
 
 #pragma mark -

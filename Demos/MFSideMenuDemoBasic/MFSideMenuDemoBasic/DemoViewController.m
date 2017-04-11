@@ -8,7 +8,13 @@
 #import "DemoViewController.h"
 #import "MFSideMenu.h"
 
-@implementation DemoViewController
+@implementation DemoViewController 
+
+- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    if (navigationController.viewControllers.count == 1) {
+        self.navigationItem.leftBarButtonItem = [self leftMenuBarButtonItem];
+    }
+}
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
     return YES;
@@ -19,6 +25,7 @@
     if(!self.title) self.title = @"Demo!";
     
     [self setupMenuBarButtonItems];
+    self.navigationController.delegate = self;
 }
 
 
@@ -27,12 +34,7 @@
 
 - (void)setupMenuBarButtonItems {
     self.navigationItem.rightBarButtonItem = [self rightMenuBarButtonItem];
-    if(self.menuContainerViewController.menuState == MFSideMenuStateClosed &&
-       ![[self.navigationController.viewControllers objectAtIndex:0] isEqual:self]) {
-        self.navigationItem.leftBarButtonItem = [self backBarButtonItem];
-    } else {
-        self.navigationItem.leftBarButtonItem = [self leftMenuBarButtonItem];
-    }
+
 }
 
 - (UIBarButtonItem *)leftMenuBarButtonItem {
@@ -49,30 +51,21 @@
             action:@selector(rightSideMenuButtonPressed:)];
 }
 
-- (UIBarButtonItem *)backBarButtonItem {
-    return [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"back-arrow"]
-                                            style:UIBarButtonItemStyleBordered
-                                           target:self
-                                           action:@selector(backButtonPressed:)];
-}
 
 
 #pragma mark -
 #pragma mark - UIBarButtonItem Callbacks
 
-- (void)backButtonPressed:(id)sender {
-    [self.navigationController popViewControllerAnimated:YES];
-}
 
 - (void)leftSideMenuButtonPressed:(id)sender {
     [self.menuContainerViewController toggleLeftSideMenuCompletion:^{
-        [self setupMenuBarButtonItems];
+//        [self setupMenuBarButtonItems];
     }];
 }
 
 - (void)rightSideMenuButtonPressed:(id)sender {
     [self.menuContainerViewController toggleRightSideMenuCompletion:^{
-        [self setupMenuBarButtonItems];
+//        [self setupMenuBarButtonItems];
     }];
 }
 

@@ -6,7 +6,7 @@
 
 #import "SideMenuViewController.h"
 #import "MFSideMenu.h"
-#import "DemoViewController.h"
+#import "MFCenterViewController.h"
 
 @implementation SideMenuViewController
 
@@ -43,7 +43,7 @@
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    DemoViewController *demoController = [[DemoViewController alloc] initWithNibName:@"DemoViewController" bundle:nil];
+    MFCenterViewController *demoController = [[MFCenterViewController alloc] init];
     demoController.title = [NSString stringWithFormat:@"Demo #%d-%d", indexPath.section, indexPath.row];
     
     UINavigationController *navigationController = self.menuContainerViewController.centerViewController;

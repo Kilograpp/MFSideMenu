@@ -9,6 +9,18 @@
 #import "MFSideMenuContainerViewController.h"
 #import <QuartzCore/QuartzCore.h>
 
+bool MFIsPad() {
+    return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad;
+}
+
+bool MFIsPhone() {
+    return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone;
+}
+
+bool MFIsLandscape() {
+    return CGRectGetWidth([UIScreen mainScreen].bounds) > CGRectGetHeight([UIScreen mainScreen].bounds);
+}
+
 NSString * const MFSideMenuStateNotificationEvent = @"MFSideMenuStateNotificationEvent";
 
 typedef enum {
@@ -158,7 +170,7 @@ typedef enum {
 #pragma mark -
 #pragma mark - UIViewController Rotation
 
--(NSUInteger)supportedInterfaceOrientations {
+- (NSUInteger)supportedInterfaceOrientations {
     if (self.centerViewController) {
         if ([self.centerViewController isKindOfClass:[UINavigationController class]]) {
             return [((UINavigationController *)self.centerViewController).topViewController supportedInterfaceOrientations];
@@ -168,7 +180,7 @@ typedef enum {
     return [super supportedInterfaceOrientations];
 }
 
--(BOOL)shouldAutorotate {
+- (BOOL)shouldAutorotate {
     if (self.centerViewController) {
         if ([self.centerViewController isKindOfClass:[UINavigationController class]]) {
             return [((UINavigationController *)self.centerViewController).topViewController shouldAutorotate];
@@ -188,16 +200,34 @@ typedef enum {
     return UIInterfaceOrientationPortrait;
 }
 
--(void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
     [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
     
     [self.shadow shadowedViewWillRotate];
+    
+    if (MFIsPhone()) {
+        return;
+    }
+    
+    UIViewController *center = self.centerViewController;
+    if (MFIsLandscape()) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            center.view.frame = CGRectMake(self.leftMenuWidth, 0, CGRectGetWidth(center.view.bounds) - self.leftMenuWidth , CGRectGetHeight(center.view.bounds));
+            self.leftMenuViewController.view.hidden = NO;
+            [self openLeftSideMenuCompletion:nil];
+        });
+    } else {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            center.view.frame = self.view.frame;
+        });
+    }
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
     [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
     
     [self.shadow shadowedViewDidRotate];
+    [self setUserInteractionStateForCenterViewController];
 }
 
 
@@ -223,14 +253,30 @@ typedef enum {
     [self removeCenterGestureRecognizers];
     [self removeChildViewControllerFromContainer:_centerViewController];
     
-    CGPoint origin = ((UIViewController *)_centerViewController).view.frame.origin;
     _centerViewController = centerViewController;
     if(!_centerViewController) return;
     
     [self addChildViewController:_centerViewController];
-    [self.view addSubview:[_centerViewController view]];
-    [((UIViewController *)_centerViewController) view].frame = (CGRect){.origin = origin, .size=centerViewController.view.frame.size};
     
+    UIViewController *center = _centerViewController;
+    
+    if (MFIsPhone()) {
+        CGPoint origin = ((UIViewController *)_centerViewController).view.frame.origin;
+        [((UIViewController *)_centerViewController) view].frame = (CGRect){.origin = origin, .size=centerViewController.view.frame.size};
+    } else {
+        if (CGRectGetWidth([UIScreen mainScreen].bounds) < CGRectGetHeight([UIScreen mainScreen].bounds)) {
+            //portrait
+            center.view.frame = self.view.frame;
+        } else {
+            //landscape
+            center.view.frame = CGRectMake(self.leftMenuWidth, 0, CGRectGetWidth(center.view.bounds) - self.leftMenuWidth , CGRectGetHeight(center.view.bounds));
+            [self.leftMenuViewController view].hidden = NO;
+            [self.view addSubview:self.leftMenuViewController.view];
+            self.leftMenuViewController.view.frame = CGRectMake(0, 0, self.leftMenuWidth, CGRectGetHeight(self.view.bounds));
+        }
+    }
+    
+    [self.view addSubview:[_centerViewController view]];
     [_centerViewController didMoveToParentViewController:self];
     
     if(self.shadow) {
@@ -312,6 +358,10 @@ typedef enum {
 #pragma mark - Menu State
 
 - (void)toggleLeftSideMenuCompletion:(void (^)(void))completion {
+    if (MFIsLandscape() && MFIsPad()) {
+        return;
+    }
+    
     if(self.menuState == MFSideMenuStateLeftMenuOpen) {
         [self setMenuState:MFSideMenuStateClosed completion:completion];
     } else {
@@ -340,6 +390,10 @@ typedef enum {
 }
 
 - (void)closeSideMenuCompletion:(void (^)(void))completion {
+    if (MFIsLandscape() && MFIsPad()) {
+        return;
+    }
+    
     [self setCenterViewControllerOffset:0 animated:YES completion:completion];
 }
 
@@ -528,7 +582,7 @@ typedef enum {
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
     if([gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]] &&
-       self.menuState != MFSideMenuStateClosed) return YES;
+       self.menuState != MFSideMenuStateClosed && !MFIsLandscape()) return YES;
     
     if([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
         if([gestureRecognizer.view isEqual:[self.centerViewController view]])
@@ -545,9 +599,20 @@ typedef enum {
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    BOOL shouldAllowPan = NO;
     if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
         CGPoint velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:gestureRecognizer.view];
         BOOL isHorizontalPanning = fabs(velocity.x) > fabs(velocity.y);
+        BOOL isPanDirectionLeft = self.menuState == MFSideMenuStateClosed && velocity.x < 0;
+        BOOL isIpadLandscape = MFIsLandscape() && MFIsPad();
+        
+        if (isIpadLandscape) {
+            return NO;
+        }
+        
+        if (isPanDirectionLeft) {
+            return shouldAllowPan;
+        }
         return isHorizontalPanning;
     }
     return YES;
@@ -715,7 +780,11 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     if([self.centerViewController respondsToSelector:@selector(viewControllers)]) {
         NSArray *viewControllers = [self.centerViewController viewControllers];
         for(UIViewController* viewController in viewControllers) {
-            viewController.view.userInteractionEnabled = (self.menuState == MFSideMenuStateClosed);
+            if (MFIsLandscape() && MFIsPad()) {
+                viewController.view.userInteractionEnabled = YES;
+            } else {
+                viewController.view.userInteractionEnabled = (self.menuState == MFSideMenuStateClosed);
+            }
         }
     }
 }

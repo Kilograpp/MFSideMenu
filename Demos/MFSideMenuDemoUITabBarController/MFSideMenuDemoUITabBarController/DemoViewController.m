@@ -27,12 +27,6 @@
 
 - (void)setupMenuBarButtonItems {
     self.navigationItem.rightBarButtonItem = [self rightMenuBarButtonItem];
-    if(self.menuContainerViewController.menuState == MFSideMenuStateClosed &&
-       ![[self.navigationController.viewControllers objectAtIndex:0] isEqual:self]) {
-        self.navigationItem.leftBarButtonItem = [self backBarButtonItem];
-    } else {
-        self.navigationItem.leftBarButtonItem = [self leftMenuBarButtonItem];
-    }
 }
 
 - (UIBarButtonItem *)leftMenuBarButtonItem {
@@ -43,10 +37,7 @@
 }
 
 - (UIBarButtonItem *)rightMenuBarButtonItem {
-    return [[UIBarButtonItem alloc]
-            initWithImage:[UIImage imageNamed:@"menu-icon.png"] style:UIBarButtonItemStyleBordered
-            target:self
-            action:@selector(rightSideMenuButtonPressed:)];
+    return [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(rightSideMenuButtonPressed:)]
 }
 
 - (UIBarButtonItem *)backBarButtonItem {

@@ -6,14 +6,14 @@
 //
 
 #import "MFAppDelegate.h"
-#import "DemoViewController.h"
 #import "SideMenuViewController.h"
 #import "MFSideMenuContainerViewController.h"
+#import "MFCenterViewController.h"
 
 @implementation MFAppDelegate
 
-- (DemoViewController *)demoController {
-    return [[DemoViewController alloc] initWithNibName:@"DemoViewController" bundle:nil];
+- (MFCenterViewController *)demoController {
+    return [[MFCenterViewController alloc] init];
 }
 
 - (UINavigationController *)navigationController {
@@ -26,11 +26,10 @@
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
     SideMenuViewController *leftMenuViewController = [[SideMenuViewController alloc] init];
-    SideMenuViewController *rightMenuViewController = [[SideMenuViewController alloc] init];
     MFSideMenuContainerViewController *container = [MFSideMenuContainerViewController
                                                     containerWithCenterViewController:[self navigationController]
                                                     leftMenuViewController:leftMenuViewController
-                                                    rightMenuViewController:rightMenuViewController];
+                                                    rightMenuViewController:nil];
     self.window.rootViewController = container;
     [self.window makeKeyAndVisible];
     

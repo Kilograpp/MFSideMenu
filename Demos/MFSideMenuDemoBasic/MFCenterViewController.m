@@ -31,7 +31,7 @@
     
     _tableView.delegate = self;
     _tableView.dataSource = self;
-    self.title = @"Some title";
+//    self.title = @"Some title";
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:nil];
 }
 

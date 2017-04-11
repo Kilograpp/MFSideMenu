@@ -253,25 +253,29 @@ typedef enum {
     [self removeCenterGestureRecognizers];
     [self removeChildViewControllerFromContainer:_centerViewController];
     
+    CGPoint origin = ((UIViewController *)_centerViewController).view.frame.origin;
     _centerViewController = centerViewController;
     if(!_centerViewController) return;
     
     [self addChildViewController:_centerViewController];
     
     UIViewController *center = _centerViewController;
-    
+    [self.view addSubview:[_centerViewController view]];
     if (MFIsPhone()) {
-        CGPoint origin = ((UIViewController *)_centerViewController).view.frame.origin;
+
         [((UIViewController *)_centerViewController) view].frame = (CGRect){.origin = origin, .size=centerViewController.view.frame.size};
     } else {
         if (CGRectGetWidth([UIScreen mainScreen].bounds) < CGRectGetHeight([UIScreen mainScreen].bounds)) {
             //portrait
-            center.view.frame = self.view.frame;
+            [((UIViewController *)_centerViewController) view].frame = (CGRect){.origin = origin, .size=centerViewController.view.frame.size};
         } else {
             //landscape
             center.view.frame = CGRectMake(self.leftMenuWidth, 0, CGRectGetWidth(center.view.bounds) - self.leftMenuWidth , CGRectGetHeight(center.view.bounds));
             [self.leftMenuViewController view].hidden = NO;
-            [self.view addSubview:self.leftMenuViewController.view];
+            if (self.leftMenuViewController.view.superview == nil) {
+                [self.view addSubview:self.leftMenuViewController.view];
+            }
+            
             self.leftMenuViewController.view.frame = CGRectMake(0, 0, self.leftMenuWidth, CGRectGetHeight(self.view.bounds));
         }
     }

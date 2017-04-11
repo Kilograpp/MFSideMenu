@@ -46,9 +46,13 @@
     MFCenterViewController *demoController = [[MFCenterViewController alloc] init];
     demoController.title = [NSString stringWithFormat:@"Demo #%d-%d", indexPath.section, indexPath.row];
     
-    UINavigationController *navigationController = self.menuContainerViewController.centerViewController;
-    NSArray *controllers = [NSArray arrayWithObject:demoController];
-    navigationController.viewControllers = controllers;
+//    UINavigationController *navigationController = self.menuContainerViewController.centerViewController;
+//    NSArray *controllers = [NSArray arrayWithObject:demoController];
+//    navigationController.viewControllers = controllers;
+//    [self.menuContainerViewController setMenuState:MFSideMenuStateClosed];
+    
+    UINavigationController *nc = [[UINavigationController alloc] initWithRootViewController:demoController];
+    self.menuContainerViewController.centerViewController = nc;
     [self.menuContainerViewController setMenuState:MFSideMenuStateClosed];
 }
 
